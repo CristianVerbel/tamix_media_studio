@@ -42,6 +42,16 @@ jobs:
         run: npm ci
         working-directory: studio-infra
 
+      # SST empaqueta el Lambda del API y el del planificador leyendo
+      # directamente `../services/studio-api/src/...`: necesita que esas
+      # dependencias (hono, aws-jwt-verify, los SDK de AWS) estén instaladas
+      # ahí, no sólo en studio-infra. Sin este paso, el paquete fallaba con
+      # «Could not resolve "hono"» y parecidos a mitad del despliegue —
+      # después de ya haber creado la tabla, el dominio y los certificados.
+      - name: Instalar dependencias del backend del Studio
+        run: npm ci
+        working-directory: services/studio-api
+
       - name: Preparar SST
         run: npx sst install
         working-directory: studio-infra
