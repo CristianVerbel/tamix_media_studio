@@ -47,8 +47,15 @@ Backlog dentro de este épico:
 ## P0 — Integraciones — construido lo mínimo; ingestión automática en backlog
 
 1. Construido: API keys/llaves — reutilizada la de Tamix, no una nueva.
-2. Construido: webhooks salientes firmados (`domain/integraciones.ts`,
-   `routes/integraciones.ts`), con pruebas de la firma.
+2. Construido: webhooks salientes firmados, con reparto de verdad
+   (`lib/despacho.ts`) en los tres eventos del planificador —
+   `planificador.programado`, `.publicado`, `.fallido` — cada intento
+   firmado y registrado en `ENTREGAS#<integracionId>`, con pruebas de la
+   firma. Backlog: la escalera de reintentos (`REINTENTOS_MINUTOS` existe
+   en `domain/planificador.ts` y ya la usa el planificador para sus propios
+   reintentos, pero un webhook que falla hoy se registra `fallido` y no se
+   reintenta solo todavía) y los dos eventos de `integracion.sync.*`, que
+   dependen del worker de RSS del punto siguiente.
 3. Construido: alta de una fuente RSS (`POST /integraciones/:handle` con
    `tipo: 'rss'`), validada.
 4. Backlog: el **worker que de verdad lee el RSS** en un horario y propone

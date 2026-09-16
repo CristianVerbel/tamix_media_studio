@@ -7,6 +7,7 @@ import {
 import { Hono } from 'hono';
 
 import { construirEvento } from '../domain/auditoria.js';
+import { EVENTOS_DISPONIBLES, type EventoWebhook } from '../domain/integraciones.js';
 import {
   editable,
   PAPEL_MINIMO_PARA_PROGRAMAR,
@@ -15,6 +16,7 @@ import {
   type ItemDeCola,
 } from '../domain/planificador.js';
 import { HttpError, requireAuth, viewerOf, type AppEnv } from '../lib/auth.js';
+import { despacharEvento } from '../lib/despacho.js';
 import { deleteItem, getItem, putItem, query, updateItem } from '../lib/ddb.js';
 import { param } from '../lib/http.js';
 import { id, sortableTimestamp } from '../lib/ids.js';
@@ -221,4 +223,10 @@ export async function registrarEvento(
     entity: 'auditoria',
     ...evento,
   });
+
+  // Sólo lo que alguien puede suscribir de verdad (ver EVENTOS_DISPONIBLES)
+  // sale como webhook saliente; el resto de acciones son sólo de auditoría.
+  if ((EVENTOS_DISPONIBLES as string[]).includes(accion)) {
+    await despacharEvento(handle, accion as EventoWebhook, detalle);
+  }
 }
