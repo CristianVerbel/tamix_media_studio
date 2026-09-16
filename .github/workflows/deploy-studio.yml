@@ -59,9 +59,20 @@ jobs:
       - name: Desplegar
         working-directory: studio-infra
         env:
-          DOMINIO: ${{ vars.DOMINIO }}
+          # Ninguno de estos cinco es secreto por naturaleza (son nombres e
+          # identificadores, no contraseñas), pero se leen de `secrets` y no
+          # de `vars` porque así es como están guardados en este repositorio.
+          # `DOMINIO` y `ZONA_DNS` son los mismos en pruebas y en producción
+          # —el mismo dominio, la misma zona de Route 53— así que basta con
+          # tenerlos una vez, a nivel de repositorio. Los otros tres cambian
+          # entre etapas: cuando llegue el momento de desplegar a
+          # producción, se ponen con estos mismos nombres pero dentro del
+          # entorno «production» (Settings → Environments → production →
+          # Secrets), que gana sobre el valor de repositorio sin tocar este
+          # flujo.
+          DOMINIO: ${{ secrets.DOMINIO }}
           ZONA_DNS: ${{ secrets.ZONA_DNS }}
-          TAMIX_API_URL: ${{ vars.TAMIX_API_URL }}
+          TAMIX_API_URL: ${{ secrets.TAMIX_API_URL }}
           TAMIX_COGNITO_USER_POOL_ID: ${{ secrets.TAMIX_COGNITO_USER_POOL_ID }}
           TAMIX_COGNITO_CLIENT_ID: ${{ secrets.TAMIX_COGNITO_CLIENT_ID }}
           VERSION: ${{ github.ref_type == 'tag' && github.ref_name || github.sha }}
