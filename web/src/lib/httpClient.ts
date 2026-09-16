@@ -1,5 +1,5 @@
 import { shapeApiError } from './apiError';
-import { getValidAccessToken } from './auth';
+import { getValidIdToken } from './auth';
 
 type Query = Record<string, string | number | boolean | undefined>;
 
@@ -24,7 +24,7 @@ export function createApiClient(baseUrl: string, etiqueta: string) {
       throw new Error(`${etiqueta} no está configurado; falta la variable de entorno en este despliegue.`);
     }
 
-    const token = await getValidAccessToken();
+    const token = await getValidIdToken();
     const url = new URL(`${base}${path}`);
     if (options.query) {
       for (const [key, value] of Object.entries(options.query)) {

@@ -2,9 +2,15 @@ import { emitSessionExpired } from './authEvents';
 
 /**
  * Autenticación: 3 llamadas directas a la API real de Tamix, sin SDK de
- * Cognito en el cliente. El mismo access token sirve para Tamix y para el
- * Studio (verifican contra el mismo user pool), así que se guarda una sola
- * vez aquí y ambos clientes lo piden con `getValidAccessToken()`.
+ * Cognito en el cliente. La sesión que se reenvía es el **id token**, no el
+ * access token: el user pool de Tamix usa el correo como nombre de
+ * usuario, y con ese esquema el access token lleva un UUID por dentro, no
+ * el correo — `requireAuth` en Tamix (y el mismo chequeo en el backend del
+ * Studio) no puede resolver la cuenta con él y contesta «El token no
+ * identifica la cuenta». El id token sí lleva el correo. El mismo id token
+ * sirve para Tamix y para el Studio (verifican contra el mismo user pool),
+ * así que se guarda una sola vez aquí y ambos clientes lo piden con
+ * `getValidIdToken()`.
  */
 
 const TAMIX_API_URL = (import.meta.env.VITE_TAMIX_API_URL ?? '').replace(/\/+$/, '');
@@ -108,7 +114,7 @@ function limpiarSesion(): void {
 }
 
 export function isAuthenticated(): boolean {
-  return Boolean(localStorage.getItem(STORAGE.access) && localStorage.getItem(STORAGE.refresh));
+  return Boolean(localStorage.getItem(STORAGE.id) && localStorage.getItem(STORAGE.refresh));
 }
 
 export function logout(): void {
@@ -140,21 +146,21 @@ async function refrescarTokens(): Promise<string> {
 
   const tokens = body as { idToken: string; accessToken: string; refreshToken: string; expiresIn: number };
   guardarSesion(tokens);
-  return tokens.accessToken;
+  return tokens.idToken;
 }
 
 /**
- * Devuelve un access token válido, refrescando de forma transparente si
- * está por vencer. Si el refresh token también está muerto, limpia todo,
- * avisa por `authEvents` y lanza — quien llama debe dejar que el shell
- * mande a /entrar.
+ * Devuelve un id token válido, refrescando de forma transparente si está
+ * por vencer. Si el refresh token también está muerto, limpia todo, avisa
+ * por `authEvents` y lanza — quien llama debe dejar que el shell mande a
+ * /entrar.
  */
-export async function getValidAccessToken(): Promise<string> {
-  const access = localStorage.getItem(STORAGE.access);
+export async function getValidIdToken(): Promise<string> {
+  const id = localStorage.getItem(STORAGE.id);
   const expiresAtRaw = localStorage.getItem(STORAGE.expiresAt);
   const expiresAt = expiresAtRaw ? Number(expiresAtRaw) : 0;
 
-  if (!access || !expiresAtRaw || Date.now() >= expiresAt - MARGEN_REFRESH_MS) {
+  if (!id || !expiresAtRaw || Date.now() >= expiresAt - MARGEN_REFRESH_MS) {
     if (!refrescoEnVuelo) {
       refrescoEnVuelo = refrescarTokens().finally(() => {
         refrescoEnVuelo = null;
@@ -163,5 +169,5 @@ export async function getValidAccessToken(): Promise<string> {
     return refrescoEnVuelo;
   }
 
-  return access;
+  return id;
 }
