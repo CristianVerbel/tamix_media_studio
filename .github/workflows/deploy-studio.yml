@@ -1,0 +1,74 @@
+# Despliegue de Tamix Media Studio.
+#
+# Fusionar en `main` despliega a **pruebas**. Una etiqueta `v*` despliega a
+# **producción** — y sólo eso: no hay disparo automático a producción sin
+# etiqueta, la misma regla que usa Tamix-social-media para el resto de la
+# red.
+#
+# Nada de esto crea infraestructura de Tamix: `ZONA_DNS`,
+# `TAMIX_COGNITO_USER_POOL_ID` y `TAMIX_COGNITO_CLIENT_ID` son valores que ya
+# existen —los outputs del stack `acento-social`— y se leen, no se generan
+# aquí.
+name: Desplegar Studio
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+
+concurrency:
+  group: desplegar-studio-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  desplegar:
+    name: Desplegar (${{ github.ref_type == 'tag' && 'producción' || 'pruebas' }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: ${{ github.ref_type == 'tag' && 'production' || 'staging' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: studio-infra/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+        working-directory: studio-infra
+
+      - name: Preparar SST
+        run: npx sst install
+        working-directory: studio-infra
+
+      - name: Configurar credenciales de AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          # Mismo mecanismo que usa Tamix-social-media en sus propios flujos
+          # (deploy-social-infra.yml, mantenimiento.yml): claves de acceso
+          # de la misma cuenta de AWS, no un rol OIDC nuevo que dar de alta.
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Desplegar
+        working-directory: studio-infra
+        env:
+          DOMINIO: ${{ vars.DOMINIO }}
+          ZONA_DNS: ${{ secrets.ZONA_DNS }}
+          TAMIX_API_URL: ${{ vars.TAMIX_API_URL }}
+          TAMIX_COGNITO_USER_POOL_ID: ${{ secrets.TAMIX_COGNITO_USER_POOL_ID }}
+          TAMIX_COGNITO_CLIENT_ID: ${{ secrets.TAMIX_COGNITO_CLIENT_ID }}
+          VERSION: ${{ github.ref_type == 'tag' && github.ref_name || github.sha }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            npx sst deploy --stage production
+          else
+            npx sst deploy --stage staging
+          fi

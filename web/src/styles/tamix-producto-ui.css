@@ -1,0 +1,194 @@
+/* TAMIX PRODUCT UI — v1.0
+   Import after the current application styles.
+   Scope new components with .tmx-app to avoid breaking third-party content. */
+
+/* El @import de Google Fonts de la hoja original se movió al principio de
+   globals.css (un @import sólo puede ir precedido de @charset/@layer en la
+   hoja final combinada); el resto de este archivo es exactamente el de
+   marca/producto-ui.css en Tamix-social-media. */
+
+:root {
+  color-scheme: light;
+  --tmx-ink: #101114;
+  --tmx-ink-soft: #24262c;
+  --tmx-muted: #717784;
+  --tmx-muted-2: #9da2ad;
+  --tmx-canvas: #f7f7f8;
+  --tmx-surface: #ffffff;
+  --tmx-surface-raised: #ffffff;
+  --tmx-line: #e8e9ed;
+  --tmx-line-strong: #d7d9df;
+  --tmx-violet: #5533ff;
+  --tmx-magenta: #d72bd7;
+  --tmx-coral: #ff4d67;
+  --tmx-brand-gradient: linear-gradient(135deg, var(--tmx-violet) 0%, var(--tmx-magenta) 52%, var(--tmx-coral) 100%);
+  --tmx-success: #168a5b;
+  --tmx-warning: #a76600;
+  --tmx-danger: #d92d20;
+
+  --tmx-font-ui: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --tmx-font-editorial: Newsreader, Georgia, "Times New Roman", serif;
+
+  --tmx-fs-xs: .75rem;
+  --tmx-fs-sm: .875rem;
+  --tmx-fs-md: 1rem;
+  --tmx-fs-lg: 1.125rem;
+  --tmx-fs-xl: 1.5rem;
+  --tmx-fs-2xl: clamp(1.9rem, 4vw, 3.25rem);
+  --tmx-leading-tight: 1.12;
+  --tmx-leading-ui: 1.4;
+  --tmx-leading-reading: 1.68;
+
+  --tmx-space-1: .25rem;
+  --tmx-space-2: .5rem;
+  --tmx-space-3: .75rem;
+  --tmx-space-4: 1rem;
+  --tmx-space-5: 1.25rem;
+  --tmx-space-6: 1.5rem;
+  --tmx-space-8: 2rem;
+  --tmx-space-10: 2.5rem;
+  --tmx-space-12: 3rem;
+
+  --tmx-radius-sm: .75rem;
+  --tmx-radius-md: 1.125rem;
+  --tmx-radius-lg: 1.5rem;
+  --tmx-radius-pill: 999px;
+  --tmx-shadow-soft: 0 8px 32px rgb(16 17 20 / .08);
+  --tmx-shadow-nav: 0 12px 40px rgb(16 17 20 / .14);
+  --tmx-content: 42rem;
+  --tmx-shell: 78rem;
+  --tmx-header-h: 4.5rem;
+  --tmx-nav-h: 4.25rem;
+  --tmx-focus: 0 0 0 3px rgb(85 51 255 / .22);
+  --tmx-ease: cubic-bezier(.2,.8,.2,1);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --tmx-ink: #f7f7f8;
+  --tmx-ink-soft: #e5e6ea;
+  --tmx-muted: #a5a9b3;
+  --tmx-muted-2: #7d828d;
+  --tmx-canvas: #0d0e11;
+  --tmx-surface: #15161a;
+  --tmx-surface-raised: #1b1c21;
+  --tmx-line: #292b32;
+  --tmx-line-strong: #3a3d46;
+  --tmx-shadow-soft: 0 10px 34px rgb(0 0 0 / .28);
+  --tmx-shadow-nav: 0 16px 44px rgb(0 0 0 / .42);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+body, .tmx-app { margin: 0; background: var(--tmx-canvas); color: var(--tmx-ink); font-family: var(--tmx-font-ui); }
+button, input, textarea, select { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: none; box-shadow: var(--tmx-focus); }
+
+.tmx-shell { width: min(100%, var(--tmx-shell)); margin-inline: auto; }
+.tmx-feed { width: min(100%, var(--tmx-content)); margin-inline: auto; }
+.tmx-reading { width: min(calc(100% - 2rem), 43rem); margin-inline: auto; }
+.tmx-stack > * + * { margin-top: var(--tmx-space-4); }
+
+.tmx-header {
+  position: sticky; inset-block-start: 0; z-index: 50; height: var(--tmx-header-h);
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  padding-inline: clamp(1rem, 3vw, 2rem); background: color-mix(in srgb, var(--tmx-surface) 92%, transparent);
+  border-bottom: 1px solid var(--tmx-line); backdrop-filter: blur(18px) saturate(1.25);
+}
+.tmx-header__end { justify-self: end; }
+.tmx-brand { display: inline-flex; align-items: center; gap: .65rem; color: var(--tmx-ink); text-decoration: none; }
+.tmx-brand__mark { width: 2.35rem; height: 2.35rem; flex: none; }
+.tmx-brand__word { font-size: 1.35rem; font-weight: 700; letter-spacing: -.045em; }
+
+.tmx-card { background: var(--tmx-surface); border: 1px solid var(--tmx-line); border-radius: var(--tmx-radius-md); }
+.tmx-card--raised { box-shadow: var(--tmx-shadow-soft); }
+.tmx-card--dark { background: #101114; color: #fff; border-color: #101114; }
+.tmx-card__body { padding: clamp(1rem, 3vw, 1.5rem); }
+
+.tmx-btn {
+  min-height: 2.75rem; display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  padding: .7rem 1.15rem; border: 1px solid transparent; border-radius: var(--tmx-radius-pill);
+  font-weight: 650; color: var(--tmx-ink); background: var(--tmx-surface); cursor: pointer;
+  transition: transform 160ms var(--tmx-ease), background 160ms var(--tmx-ease), border-color 160ms var(--tmx-ease);
+}
+.tmx-btn:hover { transform: translateY(-1px); }
+.tmx-btn:active { transform: translateY(0) scale(.985); }
+.tmx-btn--primary { color: #fff; background: var(--tmx-brand-gradient); }
+.tmx-btn--ink { color: var(--tmx-canvas); background: var(--tmx-ink); }
+.tmx-btn--outline { border-color: var(--tmx-line-strong); }
+.tmx-btn--ghost { background: transparent; }
+.tmx-btn--icon { width: 2.75rem; padding: 0; }
+
+.tmx-tabs { display: flex; gap: 1.5rem; border-bottom: 1px solid var(--tmx-line); overflow-x: auto; scrollbar-width: none; }
+.tmx-tab { position: relative; padding: 1rem 0 .9rem; color: var(--tmx-muted); font-weight: 600; white-space: nowrap; }
+.tmx-tab[aria-selected="true"] { color: var(--tmx-ink); }
+.tmx-tab[aria-selected="true"]::after { content: ""; position: absolute; inset: auto 0 -1px; height: 3px; border-radius: 3px; background: var(--tmx-brand-gradient); }
+
+.tmx-composer { padding: 1rem; background: var(--tmx-surface); border: 1px solid var(--tmx-line); border-radius: var(--tmx-radius-lg); }
+.tmx-composer textarea { width: 100%; min-height: 5rem; resize: vertical; border: 0; outline: 0; color: var(--tmx-ink); background: transparent; }
+.tmx-composer textarea::placeholder { color: var(--tmx-muted-2); }
+.tmx-composer__actions { display: flex; align-items: center; gap: .35rem; padding-top: .75rem; border-top: 1px solid var(--tmx-line); }
+.tmx-composer__submit { margin-inline-start: auto; }
+
+.tmx-post { padding-block: 1.25rem; background: var(--tmx-surface); border-bottom: 1px solid var(--tmx-line); }
+.tmx-post__meta { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .7rem; padding-inline: 1.25rem; }
+.tmx-avatar { width: 2.25rem; height: 2.25rem; border-radius: 50%; object-fit: cover; background: var(--tmx-line); }
+.tmx-post__name { font-size: var(--tmx-fs-sm); font-weight: 700; }
+.tmx-post__handle { font-size: var(--tmx-fs-xs); color: var(--tmx-muted); }
+.tmx-post__copy { padding: 1rem 1.25rem 0; font-size: var(--tmx-fs-lg); line-height: 1.45; }
+.tmx-post__title { margin: 0; font-size: clamp(1.25rem, 4vw, 1.65rem); line-height: 1.18; letter-spacing: -.025em; }
+.tmx-post__media { width: calc(100% - 2.5rem); margin: 1rem 1.25rem 0; aspect-ratio: 16/9; object-fit: cover; border-radius: var(--tmx-radius-md); background: var(--tmx-line); }
+.tmx-post__actions { display: flex; align-items: center; gap: 1.35rem; padding: .9rem 1.25rem 0; color: var(--tmx-muted); font-size: var(--tmx-fs-sm); }
+.tmx-post__actions button { color: inherit; background: none; border: 0; cursor: pointer; }
+.tmx-post__actions button:hover { color: var(--tmx-ink); }
+
+.tmx-article__eyebrow { color: var(--tmx-violet); font-size: var(--tmx-fs-xs); font-weight: 750; text-transform: uppercase; letter-spacing: .08em; }
+.tmx-article__title { margin: .6rem 0 1rem; font: 700 var(--tmx-fs-2xl)/var(--tmx-leading-tight) var(--tmx-font-ui); letter-spacing: -.04em; }
+.tmx-article__dek { color: var(--tmx-muted); font-size: var(--tmx-fs-lg); line-height: 1.5; }
+.tmx-article__body { font: 400 clamp(1.08rem, 2vw, 1.25rem)/var(--tmx-leading-reading) var(--tmx-font-editorial); }
+.tmx-article__body h2 { margin-top: 2.2em; font-family: var(--tmx-font-ui); line-height: 1.2; letter-spacing: -.025em; }
+.tmx-article__body a { color: var(--tmx-violet); text-underline-offset: .18em; }
+
+.tmx-editorial-pick { padding: 1.4rem; background: #101114; color: #fff; border-radius: var(--tmx-radius-lg); }
+.tmx-editorial-pick__label { color: var(--tmx-coral); font-size: var(--tmx-fs-xs); font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.tmx-editorial-pick h2 { margin: .75rem 0; font-size: clamp(1.4rem, 5vw, 2rem); line-height: 1.16; }
+
+.tmx-chip { display: inline-flex; align-items: center; min-height: 2.5rem; padding: .55rem 1rem; border: 1px solid var(--tmx-line); border-radius: var(--tmx-radius-pill); background: var(--tmx-surface); color: var(--tmx-ink); font-size: var(--tmx-fs-sm); font-weight: 600; }
+.tmx-chip[aria-pressed="true"] { color: #fff; border-color: transparent; background: var(--tmx-brand-gradient); }
+
+.tmx-bottom-nav {
+  position: fixed; z-index: 60; inset: auto max(1rem, env(safe-area-inset-right)) max(.75rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  height: var(--tmx-nav-h); display: grid; grid-template-columns: repeat(5, 1fr); align-items: center;
+  max-width: 25rem; margin-inline: auto; padding: .4rem; border: 1px solid var(--tmx-line);
+  border-radius: var(--tmx-radius-pill); background: color-mix(in srgb, var(--tmx-surface) 94%, transparent); box-shadow: var(--tmx-shadow-nav); backdrop-filter: blur(18px);
+}
+.tmx-bottom-nav__item { min-width: 0; display: grid; place-items: center; gap: .15rem; color: var(--tmx-muted); text-decoration: none; font-size: .62rem; font-weight: 650; }
+.tmx-bottom-nav__item svg { width: 1.25rem; height: 1.25rem; }
+.tmx-bottom-nav__item[aria-current="page"] { color: var(--tmx-violet); }
+
+.tmx-media-profile__cover { min-height: 10rem; padding: 1.5rem; display: flex; align-items: flex-end; background: #101114; color: #fff; }
+.tmx-media-profile__identity { position: relative; margin-top: -2rem; padding: 0 1.25rem 1.25rem; }
+.tmx-verified { color: var(--tmx-violet); }
+
+.tmx-skeleton { border-radius: .6rem; background: linear-gradient(90deg,var(--tmx-line),var(--tmx-surface),var(--tmx-line)); background-size: 200% 100%; animation: tmx-shimmer 1.4s infinite; }
+@keyframes tmx-shimmer { to { background-position: -200% 0; } }
+
+@media (min-width: 768px) {
+  .tmx-post { border: 1px solid var(--tmx-line); border-radius: var(--tmx-radius-lg); }
+  .tmx-bottom-nav { inset-inline: 50%; transform: translateX(-50%); width: 25rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* Compatibility bridge: attach these classes to existing Acento components while migrating. */
+.tmx-app .app-header {
+  position: sticky; inset-block-start: 0; z-index: 50;
+  min-height: var(--tmx-header-h); background: color-mix(in srgb, var(--tmx-surface) 92%, transparent);
+  border-bottom: 1px solid var(--tmx-line); backdrop-filter: blur(18px) saturate(1.25);
+}
+.tmx-app .bottom-navigation { border-radius: var(--tmx-radius-pill); box-shadow: var(--tmx-shadow-nav); }
+.tmx-app .primary-action { color: #fff; background: var(--tmx-brand-gradient); border-radius: var(--tmx-radius-pill); }
+.tmx-app .content-card { background: var(--tmx-surface); border: 1px solid var(--tmx-line); border-radius: var(--tmx-radius-md); }
