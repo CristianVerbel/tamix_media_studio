@@ -1,0 +1,148 @@
+import type { Rol } from '@/lib/roles';
+
+/** `/me`: se trata sueltamente, sólo se muestra lo que llega. */
+export type Viewer = Record<string, unknown> & {
+  id?: string;
+  handle?: string;
+  name?: string;
+  avatarUrl?: string;
+};
+
+/** Una fila de `/me/cuentas`: cada publicación/medio que la persona gestiona. */
+export type CuentaResumen = Record<string, unknown> & {
+  handle: string;
+  name?: string;
+  avatarUrl?: string;
+  verified?: boolean;
+  rol: Rol;
+  esPropia: boolean;
+};
+
+export type Automatizacion = {
+  disponible: boolean;
+  activa?: boolean;
+  publicadas?: number;
+  ultimoUso?: string | null;
+  url?: string | null;
+};
+
+/** `/publicaciones/:handle/gestion`: la autoridad de rol para esta cuenta. */
+export type Gestion = {
+  handle: string;
+  nombre: string;
+  verificada: boolean;
+  tipoDeCuenta: string;
+  tuRol: Rol | null;
+  eresDueno: boolean;
+  automatizacion: Automatizacion;
+};
+
+export type Access = 'publico' | 'suscriptores' | 'pago';
+export type PostKind = 'articulo' | 'audio' | 'video' | 'envivo' | string;
+
+/** Una pieza (post o nota/apunte), tratada con campos sueltos según venga. */
+export type Pieza = Record<string, unknown> & {
+  id: string;
+  kind?: PostKind;
+  title?: string;
+  subtitle?: string;
+  body?: string;
+  bodyHtml?: string;
+  coverUrl?: string | null;
+  access?: Access;
+  topics?: string[];
+  circulo?: string;
+  archivado?: boolean;
+  createdAt?: string;
+  publishedAt?: string;
+  updatedAt?: string;
+};
+
+export type PublicationFull = {
+  publication: Record<string, unknown> & {
+    handle: string;
+    name?: string;
+    avatarUrl?: string;
+    followerCount?: number;
+    postCount?: number;
+    verified?: boolean;
+  };
+  posts: Pieza[];
+  notes: Pieza[];
+  siguientePieza?: unknown;
+  siguienteApunte?: unknown;
+  escaparate?: unknown;
+  canales?: unknown;
+  obras?: unknown;
+};
+
+export type PiezasPage = {
+  items: Pieza[];
+  nextCursor: string | null;
+};
+
+export type ComoVa = {
+  pieza: Pieza;
+  dias: number;
+  serie: unknown[];
+  resumen: unknown;
+  totales: {
+    meGusta: number;
+    comentarios: number;
+    republicaciones: number;
+    respuestas: number;
+  };
+  tasaDeLectura: number | null;
+  sinMedir: boolean;
+};
+
+export type Caja = {
+  monthlyPriceCop: number | null;
+  cobrado: { total: number; creador: number; acento: number; pasarela: number; cuantas: number };
+  pendiente: { total: number; creador: number; acento: number; pasarela: number; cuantas: number };
+  suscripcionesActivas: number;
+  pasarelaConectada: boolean;
+  cobraYa: boolean;
+};
+
+export type Cobros = {
+  conectada: boolean;
+  cobraYa: boolean;
+  pendiente: string[];
+};
+
+export type MiembroEquipo = {
+  userId: string;
+  rol: Rol;
+  desde: string;
+  esDueno: boolean;
+  medio?: string;
+};
+
+export type Equipo = {
+  equipo: MiembroEquipo[];
+  roles: Rol[];
+};
+
+export type CrearPostEntrada = {
+  kind: PostKind;
+  title: string;
+  bodyHtml: string;
+  access: Access;
+  subtitle?: string;
+  coverUrl?: string;
+  topics?: string[];
+  priceCop?: number;
+  comoPublicacion?: boolean;
+};
+
+export type CrearNotaEntrada = {
+  body: string;
+  circulo?: string;
+};
+
+export type EditarPostEntrada = Partial<
+  Pick<CrearPostEntrada, 'title' | 'subtitle' | 'bodyHtml' | 'coverUrl' | 'access' | 'priceCop' | 'topics'>
+>;
+
+export type EditarNotaEntrada = Partial<CrearNotaEntrada>;
