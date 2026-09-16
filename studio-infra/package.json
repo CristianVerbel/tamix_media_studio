@@ -1,0 +1,19 @@
+{
+  "name": "@tamix/studio-infra",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Infraestructura AWS de Tamix Media Studio (app SST independiente de acento-social).",
+  "scripts": {
+    "install:sst": "sst install",
+    "test": "node --test test/*.test.mjs",
+    "deploy:staging": "sst deploy --stage staging",
+    "deploy:prod": "sst deploy --stage production",
+    "remove:staging": "sst remove --stage staging",
+    "shell": "sst shell",
+    "dev": "sst dev"
+  },
+  "devDependencies": {
+    "sst": "^3.9.0"
+  }
+}
