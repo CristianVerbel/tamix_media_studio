@@ -127,6 +127,10 @@ export default $config({
     const schedulerGroup = new aws.scheduler.ScheduleGroup('GrupoDelPlanificador', {
       name: `tamix-media-studio-${stage}`,
     });
+    // Sólo los horarios de este grupo, no los de toda la cuenta: un papel
+    // con `scheduler:*Schedule` sobre `*` podría tocar los de cualquier otra
+    // aplicación de SST en la misma cuenta.
+    const arnDelGrupo = $interpolate`arn:aws:scheduler:${aws.getRegionOutput().name}:${aws.getCallerIdentityOutput().accountId}:schedule/${schedulerGroup.name}/*`;
 
     /** El papel que EventBridge Scheduler asume para poder llamar al trabajador. */
     const rolDelProgramador = new aws.iam.Role('RolDelProgramador', {
@@ -150,7 +154,7 @@ export default $config({
       },
       permissions: [
         { actions: ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:UpdateItem', 'dynamodb:Query'], resources: [table.arn] },
-        { actions: ['scheduler:CreateSchedule'], resources: ['*'] },
+        { actions: ['scheduler:CreateSchedule'], resources: [arnDelGrupo] },
       ],
     });
 
@@ -196,7 +200,7 @@ export default $config({
       },
       permissions: [
         { actions: ['dynamodb:*'], resources: [table.arn] },
-        { actions: ['scheduler:CreateSchedule', 'scheduler:UpdateSchedule', 'scheduler:DeleteSchedule'], resources: ['*'] },
+        { actions: ['scheduler:CreateSchedule', 'scheduler:UpdateSchedule', 'scheduler:DeleteSchedule'], resources: [arnDelGrupo] },
         { actions: ['iam:PassRole'], resources: [rolDelProgramador.arn] },
       ],
     });
