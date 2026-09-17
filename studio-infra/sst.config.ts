@@ -155,6 +155,12 @@ export default $config({
       permissions: [
         { actions: ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:UpdateItem', 'dynamodb:Query'], resources: [table.arn] },
         { actions: ['scheduler:CreateSchedule'], resources: [arnDelGrupo] },
+        // El reintento (`reintentarOFallar`) crea su propio horario de
+        // EventBridge Scheduler, y para eso el propio trabajador —no sólo la
+        // ruta del API— necesita poder pasarle el rol a `scheduler`. Es un
+        // permiso por principal, no por función: que la API lo tenga no
+        // cubre a este Lambda.
+        { actions: ['iam:PassRole'], resources: [rolDelProgramador.arn] },
       ],
     });
 

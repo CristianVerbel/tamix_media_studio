@@ -24,7 +24,7 @@ export function MetricaDetallePage() {
         </Link>
       </Button>
 
-      <PageHeader eyebrow="Desempeño por pieza" title={(comoVa.data?.pieza?.title as string | undefined) ?? (comoVa.data?.pieza?.body as string | undefined) ?? 'Pieza'} description={`Últimos ${comoVa.data?.dias ?? 30} días.`} />
+      <PageHeader eyebrow="Desempeño por pieza" title={(comoVa.data?.pieza?.titulo as string | undefined) ?? 'Pieza'} description={`Últimos ${comoVa.data?.dias ?? 30} días.`} />
 
       {comoVa.loading ? (
         <CargandoBloque filas={3} />
