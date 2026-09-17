@@ -134,15 +134,58 @@ export type CrearPostEntrada = {
   topics?: string[];
   priceCop?: number;
   comoPublicacion?: boolean;
+  /** Sólo con `kind: 'audio'`. Un audio sin portada no se deja publicar. */
+  audioUrl?: string;
+  /** Sólo con `kind: 'video'`. */
+  videoUrl?: string;
+  videoAncho?: number;
+  videoAlto?: number;
+  durationSeconds?: number;
+  /** Sólo con `kind: 'envivo'`: el enlace de la transmisión de YouTube. */
+  youtubeUrl?: string;
+};
+
+/** La respuesta de `POST /media/upload-url`: a dónde subir, y a qué URL queda el archivo. */
+export type PermisoDeSubida = {
+  uploadUrl: string;
+  headers: Record<string, string>;
+  publicUrl: string | null;
+  key: string;
+  expiresIn: number;
+};
+
+/** Una pieza del carrusel de un apunte: hasta diez, imagen y vídeo mezclados. */
+export type MedioDelCarrusel = {
+  tipo: 'imagen' | 'video';
+  url: string;
+  duracionSegundos?: number | null;
+  ancho?: number | null;
+  alto?: number | null;
 };
 
 export type CrearNotaEntrada = {
   body: string;
   circulo?: string;
+  medios?: MedioDelCarrusel[];
 };
 
 export type EditarPostEntrada = Partial<
-  Pick<CrearPostEntrada, 'title' | 'subtitle' | 'bodyHtml' | 'coverUrl' | 'access' | 'priceCop' | 'topics'>
+  Pick<
+    CrearPostEntrada,
+    | 'title'
+    | 'subtitle'
+    | 'bodyHtml'
+    | 'coverUrl'
+    | 'access'
+    | 'priceCop'
+    | 'topics'
+    | 'audioUrl'
+    | 'videoUrl'
+    | 'videoAncho'
+    | 'videoAlto'
+    | 'durationSeconds'
+    | 'youtubeUrl'
+  >
 >;
 
 export type EditarNotaEntrada = Partial<CrearNotaEntrada>;

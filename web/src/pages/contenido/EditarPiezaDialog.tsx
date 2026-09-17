@@ -8,9 +8,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { CarruselDeArchivos } from '@/components/media/CarruselDeArchivos';
+import { SubidaDeArchivo } from '@/components/media/SubidaDeArchivo';
 import { ApiError } from '@/lib/apiError';
 import { tamixApi } from '@/lib/tamixApi';
-import type { Access, Pieza } from '@/types/tamix';
+import type { Access, MedioDelCarrusel, Pieza } from '@/types/tamix';
 
 const ACCESOS: { value: Access; label: string }[] = [
   { value: 'publico', label: 'Público' },
@@ -34,10 +36,16 @@ export function EditarPiezaDialog({
   const [subtitle, setSubtitle] = React.useState('');
   const [bodyHtml, setBodyHtml] = React.useState('');
   const [access, setAccess] = React.useState<Access>('publico');
-  const [coverUrl, setCoverUrl] = React.useState('');
+  const [coverUrl, setCoverUrl] = React.useState<string | null>(null);
+  const [audioUrl, setAudioUrl] = React.useState<string | null>(null);
+  const [videoUrl, setVideoUrl] = React.useState<string | null>(null);
+  const [videoMedida, setVideoMedida] = React.useState<{ ancho: number; alto: number; duracionSegundos?: number } | null>(null);
   const [notaBody, setNotaBody] = React.useState('');
+  const [medios, setMedios] = React.useState<MedioDelCarrusel[]>([]);
   const [enviando, setEnviando] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+
+  const kind = pieza?.kind as string | undefined;
 
   React.useEffect(() => {
     if (!pieza) return;
@@ -45,8 +53,12 @@ export function EditarPiezaDialog({
     setSubtitle((pieza.subtitle as string | undefined) ?? '');
     setBodyHtml((pieza.bodyHtml as string | undefined) ?? '');
     setAccess((pieza.access as Access | undefined) ?? 'publico');
-    setCoverUrl((pieza.coverUrl as string | undefined) ?? '');
+    setCoverUrl((pieza.coverUrl as string | undefined) ?? null);
+    setAudioUrl((pieza.audioUrl as string | undefined) ?? null);
+    setVideoUrl((pieza.videoUrl as string | undefined) ?? null);
+    setVideoMedida(null);
     setNotaBody((pieza.body as string | undefined) ?? '');
+    setMedios((pieza.medios as MedioDelCarrusel[] | undefined) ?? []);
     setError(null);
   }, [pieza]);
 
@@ -62,10 +74,15 @@ export function EditarPiezaDialog({
           subtitle: subtitle.trim() || undefined,
           bodyHtml,
           access,
-          coverUrl: coverUrl.trim() || undefined,
+          coverUrl: coverUrl ?? undefined,
+          audioUrl: kind === 'audio' ? (audioUrl ?? undefined) : undefined,
+          videoUrl: kind === 'video' ? (videoUrl ?? undefined) : undefined,
+          videoAncho: kind === 'video' ? videoMedida?.ancho : undefined,
+          videoAlto: kind === 'video' ? videoMedida?.alto : undefined,
+          durationSeconds: kind === 'video' ? videoMedida?.duracionSegundos : undefined,
         });
       } else {
-        await tamixApi.editarNota(pieza.id, { body: notaBody });
+        await tamixApi.editarNota(pieza.id, { body: notaBody, medios });
       }
       toast.success('Cambios guardados');
       onOpenChange(false);
@@ -100,11 +117,20 @@ export function EditarPiezaDialog({
                 <Label htmlFor="e-body">Cuerpo</Label>
                 <Textarea id="e-body" required value={bodyHtml} onChange={(e) => setBodyHtml(e.target.value)} className="min-h-40" />
               </div>
+
+              {kind === 'video' && (
+                <SubidaDeArchivo
+                  familia="video"
+                  label="Vídeo"
+                  valor={videoUrl}
+                  onChange={setVideoUrl}
+                  onMedido={setVideoMedida}
+                />
+              )}
+              {kind === 'audio' && <SubidaDeArchivo familia="audio" label="Audio" valor={audioUrl} onChange={setAudioUrl} />}
+
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <Label htmlFor="e-cover">Portada (URL)</Label>
-                  <Input id="e-cover" type="url" value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} />
-                </div>
+                <SubidaDeArchivo familia="imagen" label="Portada" valor={coverUrl} onChange={setCoverUrl} />
                 <div className="space-y-1.5">
                   <Label htmlFor="e-access">Acceso</Label>
                   <Select value={access} onValueChange={(v) => setAccess(v as Access)}>
@@ -123,9 +149,15 @@ export function EditarPiezaDialog({
               </div>
             </>
           ) : (
-            <div className="space-y-1.5">
-              <Label htmlFor="e-notaBody">Apunte</Label>
-              <Textarea id="e-notaBody" required value={notaBody} onChange={(e) => setNotaBody(e.target.value)} className="min-h-32" />
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="e-notaBody">Apunte</Label>
+                <Textarea id="e-notaBody" required value={notaBody} onChange={(e) => setNotaBody(e.target.value)} className="min-h-32" />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Fotos o vídeos</Label>
+                <CarruselDeArchivos medios={medios} onChange={setMedios} />
+              </div>
             </div>
           )}
 

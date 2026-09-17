@@ -10,6 +10,7 @@ import type {
   Equipo,
   ComoVa,
   Gestion,
+  PermisoDeSubida,
   Pieza,
   PiezasPage,
   PublicationFull,
@@ -41,6 +42,14 @@ export const tamixApi = {
 
   comoVa: (tipo: 'post' | 'nota', id: string, dias = 30) =>
     api.get<ComoVa>(`/piezas/${tipo}/${encodeURIComponent(id)}/como-va`, { dias }),
+
+  /**
+   * Pide dónde subir un archivo. Devuelve una URL firmada del bucket, no un
+   * camino por este API: el archivo va directo al bucket, y esto sólo abre
+   * la puerta. La misma ruta que usa la app — ver `subirArchivo.ts`.
+   */
+  permisoDeSubida: (contentType: string, size: number) =>
+    api.post<PermisoDeSubida>('/media/upload-url', { contentType, size }),
 
   crearPost: (body: CrearPostEntrada) => api.post<Pieza>('/posts', body),
   editarPost: (id: string, body: EditarPostEntrada) => api.patch<Pieza>(`/posts/${encodeURIComponent(id)}`, body),
