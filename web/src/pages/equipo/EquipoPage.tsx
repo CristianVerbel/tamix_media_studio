@@ -31,6 +31,10 @@ export function EquipoPage() {
   const [ocupado, setOcupado] = React.useState<string | null>(null);
 
   const esPropietario = alcanza(gestion.data?.tuRol, 'propietario');
+  // Tamix exige la cuenta verificada para invitar (no para cambiar de papel
+  // ni retirar a alguien): sin este segundo chequeo el botón se ve activo y
+  // el POST responde 403.
+  const puedeInvitar = esPropietario && Boolean(gestion.data?.verificada);
   const miUserId = viewer?.id as string | undefined;
 
   async function cambiarRol(userId: string, rol: Rol) {
@@ -69,7 +73,7 @@ export function EquipoPage() {
         title="Equipo"
         description="Quién gestiona esta cuenta y con qué papel."
         actions={
-          esPropietario && (
+          puedeInvitar && (
             <Button onClick={() => setInvitarAbierto(true)}>
               <Plus /> Invitar
             </Button>

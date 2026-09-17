@@ -116,7 +116,7 @@ export type MiembroEquipo = {
   rol: Rol;
   desde: string;
   esDueno: boolean;
-  medio?: string;
+  medio?: Omit<CuentaResumen, 'rol' | 'esPropia'> | null;
 };
 
 export type Equipo = {

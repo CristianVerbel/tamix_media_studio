@@ -78,7 +78,7 @@ export function Shell() {
     );
   }
 
-  const noManejaMedio = cuentas.length === 0 || cuentas.every((c) => c.esPropia);
+  const noManejaMedio = cuentas.length === 0 || cuentas.every((c) => !c.verified);
   if (noManejaMedio) return <SinMedioGestionado onLogout={salir} />;
 
   const contenidoSidebar = (
