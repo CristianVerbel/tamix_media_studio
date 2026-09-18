@@ -1,15 +1,4 @@
-import {
-  ArrowRight,
-  AudioLines,
-  BarChart3,
-  CalendarClock,
-  History,
-  Plug,
-  ShieldCheck,
-  Sparkles,
-  Users,
-  Wallet,
-} from 'lucide-react';
+import { ArrowRight, BarChart3, CalendarClock, History, Plug, ShieldCheck, Users, Wallet } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
@@ -20,39 +9,39 @@ const CAPACIDADES = [
   {
     icon: CalendarClock,
     titulo: 'Planificador',
-    texto:
-      'Programa artículos, audio, video, directos y apuntes a la hora exacta. Un EventBridge de un solo tiro dispara la publicación aunque nadie tenga la sesión abierta.',
+    texto: 'Programa artículos, audio, video, directos y apuntes a la hora exacta, sin que nadie tenga que estar conectado.',
   },
   {
     icon: Users,
     titulo: 'Equipo',
-    texto:
-      'Invita, cambia de papel y retira gente con la misma escala de Tamix: analista, redactor, editor, propietario. No hay una segunda tabla de permisos que mantener.',
+    texto: 'Invita, cambia de papel y retira gente con la misma escala de Tamix: analista, redactor, editor, propietario.',
   },
   {
     icon: Wallet,
     titulo: 'Ingresos',
-    texto:
-      'Cobrado, pendiente, suscripciones activas y el alta de cobro por Stripe Connect — todo leído en vivo de tu caja en Tamix. El dinero nunca pasa por nuestra infraestructura.',
+    texto: 'Cobrado, pendiente y suscripciones activas leídos en vivo de tu caja — tu Stripe Connect, tu dinero.',
   },
   {
     icon: Plug,
     titulo: 'Integraciones',
-    texto:
-      'Conecta una fuente RSS para proponer contenido y webhooks salientes firmados que avisan cuando algo se programó, se publicó o falló.',
+    texto: 'Una fuente RSS que propone contenido y webhooks salientes firmados que avisan qué se programó o falló.',
   },
   {
     icon: BarChart3,
     titulo: 'Métricas por pieza',
-    texto:
-      'Me gusta, comentarios, republicaciones y tasa de lectura de cada pieza, con aviso explícito de lo que ese formato todavía no puede medir.',
+    texto: 'Me gusta, comentarios, republicaciones y tasa de lectura de cada pieza que publicas.',
   },
   {
     icon: History,
     titulo: 'Auditoría',
-    texto:
-      'Cada acción del equipo y cada intento de publicación automática, registrado — para saber qué pasó y quién lo hizo, no para adivinarlo.',
+    texto: 'Cada acción del equipo y cada intento de publicación automática, registrado con quién y cuándo.',
   },
+];
+
+const CIFRAS = [
+  { cifra: '0%', texto: 'de comisión propia — el Studio no tiene ledger ni cobra por tu dinero.' },
+  { cifra: '<60s', texto: 'de desviación entre la hora que programas y la hora en que sale.' },
+  { cifra: '1', texto: 'sola sesión: el mismo código al correo que ya usas en Tamix.' },
 ];
 
 const PASOS = [
@@ -100,13 +89,26 @@ export function LandingPage() {
             Tamix <span className="tmx-brand-text">Media Studio</span>
           </span>
         </Link>
+        <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground sm:flex">
+          <a href="#capacidades" className="hover:text-foreground">
+            Capacidades
+          </a>
+          <a href="#como-funciona" className="hover:text-foreground">
+            Cómo entra tu medio
+          </a>
+        </nav>
         <Button asChild variant="ghost" size="sm" className="shrink-0">
           <Link to={ctaHref}>{autenticado ? 'Tu panel' : 'Entrar'}</Link>
         </Button>
       </header>
 
       <main>
-        <section className="px-4 pt-16 pb-20 sm:pt-24 sm:pb-28">
+        <section className="relative overflow-hidden px-4 pt-16 pb-20 sm:pt-24 sm:pb-28">
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-[-12rem] -z-10 mx-auto h-[30rem] w-[60rem] max-w-none rounded-full opacity-[0.16] blur-3xl"
+            style={{ background: 'var(--tmx-brand-gradient)' }}
+          />
           <div className="tmx-shell flex flex-col items-center gap-6 text-center">
             <span className="tmx-article__eyebrow">Para medios, autores institucionales y marcas aliadas</span>
             <h1 className="max-w-3xl font-[var(--tmx-font-editorial)] text-[clamp(2.25rem,6vw,4rem)] leading-[1.08] font-semibold tracking-tight">
@@ -114,7 +116,7 @@ export function LandingPage() {
             </h1>
             <p className="max-w-xl text-lg text-muted-foreground">
               Programa, publica, gestiona el equipo, cobra y mide — todo contra los datos reales de tu cuenta en Tamix,
-              en vivo, nunca una copia. Si Tamix no responde, el Studio lo dice; no inventa un número.
+              en vivo, nunca una copia.
             </p>
             <div className="flex flex-col items-center gap-3 sm:flex-row">
               <Button asChild size="lg">
@@ -134,13 +136,23 @@ export function LandingPage() {
           </div>
         </section>
 
+        <section className="border-t border-border px-4 py-10">
+          <div className="tmx-shell grid gap-8 sm:grid-cols-3">
+            {CIFRAS.map(({ cifra, texto }) => (
+              <div key={cifra} className="text-center sm:text-left">
+                <p className="tmx-brand-text font-[var(--tmx-font-editorial)] text-4xl font-semibold sm:text-5xl">{cifra}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{texto}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
         <section id="capacidades" className="border-t border-border px-4 py-16 sm:py-24">
           <div className="tmx-shell">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Todo lo que ya haces, en un solo panel</h2>
               <p className="mt-3 text-muted-foreground">
-                No es una copia de Tamix con otro nombre. Es la operación de una redacción — pensada para un equipo, no
-                para una persona sola con el móvil.
+                Pensado para un equipo de redacción, no para una persona sola con el móvil.
               </p>
             </div>
             <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -164,6 +176,18 @@ export function LandingPage() {
         </section>
 
         <section className="border-t border-border px-4 py-16 sm:py-24">
+          <div className="tmx-shell">
+            <div className="tmx-card tmx-card--dark mx-auto max-w-3xl p-8 sm:p-12">
+              <span className="text-xs font-semibold tracking-wide text-[var(--tmx-coral)] uppercase">Tu dinero es tuyo</span>
+              <p className="mt-4 font-[var(--tmx-font-editorial)] text-2xl leading-snug sm:text-3xl">
+                Nunca vemos tu dinero. El Studio no tiene ledger, ni statements, ni comisión propia — el cobro es tu
+                Stripe Connect y la caja se lee en vivo de Tamix, así que no hay una segunda contabilidad que cuadrar.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="como-funciona" className="border-t border-border px-4 py-16 sm:py-24">
           <div className="tmx-shell">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Cómo entra tu medio</h2>
@@ -190,27 +214,6 @@ export function LandingPage() {
         </section>
 
         <section className="border-t border-border px-4 py-16 sm:py-24">
-          <div className="tmx-shell">
-            <div className="tmx-card tmx-card--dark mx-auto max-w-3xl p-8 sm:p-12">
-              <span className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-[var(--tmx-coral)] uppercase">
-                <Sparkles className="size-3.5" aria-hidden="true" />
-                Lo que no hacemos
-              </span>
-              <p className="mt-4 font-[var(--tmx-font-editorial)] text-2xl leading-snug sm:text-3xl">
-                No duplicamos tu identidad, tu contenido ni tu dinero. No inventamos una métrica que Tamix todavía no
-                calcula. Y nuestra infraestructura es propia, aparte, para que un pico de tráfico en el panel no le
-                cueste rendimiento a la red social.
-              </p>
-              <p className="mt-6 flex items-center gap-2 text-sm text-white/70">
-                <AudioLines className="size-4" aria-hidden="true" />
-                Artículo, audio, video, directo o apunte — el mismo contenido que ya publicas, con más control sobre
-                cuándo sale.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="border-t border-border px-4 py-16 sm:py-24">
           <div className="tmx-shell flex flex-col items-center gap-5 text-center">
             <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Tu redacción ya tiene todo para empezar</h2>
             <p className="max-w-md text-muted-foreground">
@@ -227,12 +230,38 @@ export function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t border-border px-4 py-8">
-        <div className="tmx-shell flex flex-col items-center gap-2 text-center text-xs text-muted-foreground sm:flex-row sm:justify-between sm:text-left">
-          <span>Tamix Media Studio — un panel independiente sobre los datos en vivo de Tamix.</span>
-          <Link to="/entrar" className="underline-offset-4 hover:underline">
-            Entrar
-          </Link>
+      <footer className="border-t border-border px-4 py-12">
+        <div className="tmx-shell grid gap-10 sm:grid-cols-[1.5fr_1fr_1fr]">
+          <div className="flex flex-col gap-3">
+            <span className="tmx-brand">
+              <span aria-hidden="true" className="tmx-brand__mark rounded-2xl" style={{ background: 'var(--tmx-brand-gradient)' }} />
+              <span className="tmx-brand__word">
+                Tamix <span className="tmx-brand-text">Media Studio</span>
+              </span>
+            </span>
+            <p className="max-w-xs text-sm text-muted-foreground">
+              Un panel independiente sobre los datos en vivo de{' '}
+              <a href="https://tamix.app" className="underline-offset-4 hover:underline">
+                Tamix
+              </a>
+              .
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 text-sm">
+            <span className="font-semibold text-foreground">Producto</span>
+            <a href="#capacidades" className="text-muted-foreground hover:text-foreground">
+              Capacidades
+            </a>
+            <a href="#como-funciona" className="text-muted-foreground hover:text-foreground">
+              Cómo entra tu medio
+            </a>
+          </div>
+          <div className="flex flex-col gap-2 text-sm">
+            <span className="font-semibold text-foreground">Cuenta</span>
+            <Link to={ctaHref} className="text-muted-foreground hover:text-foreground">
+              {autenticado ? 'Tu panel' : 'Entrar'}
+            </Link>
+          </div>
         </div>
       </footer>
     </div>
