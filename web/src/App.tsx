@@ -9,6 +9,7 @@ import { ContenidoPage } from '@/pages/contenido/ContenidoPage';
 import { EquipoPage } from '@/pages/equipo/EquipoPage';
 import { IngresosPage } from '@/pages/ingresos/IngresosPage';
 import { IntegracionesPage } from '@/pages/integraciones/IntegracionesPage';
+import { LandingPage } from '@/pages/LandingPage';
 import { LoginPage } from '@/pages/LoginPage';
 import { MetricaDetallePage } from '@/pages/metricas/MetricaDetallePage';
 import { MetricasPage } from '@/pages/metricas/MetricasPage';
@@ -18,6 +19,7 @@ import { ResumenPage } from '@/pages/ResumenPage';
 export default function App() {
   return (
     <Routes>
+      <Route path="/" element={<LandingPage />} />
       <Route path="/entrar" element={<LoginPage />} />
       <Route
         path="/panel"
@@ -39,8 +41,7 @@ export default function App() {
         <Route path="auditoria" element={<AuditoriaPage />} />
         <Route path="configuracion" element={<ConfiguracionPage />} />
       </Route>
-      <Route path="/" element={<Navigate to="/panel" replace />} />
-      <Route path="*" element={<Navigate to="/panel" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
