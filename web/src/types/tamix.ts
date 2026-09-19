@@ -244,3 +244,47 @@ export type EditarPostEntrada = Partial<
 >;
 
 export type EditarNotaEntrada = Partial<CrearNotaEntrada>;
+
+/**
+ * Un canal (grupo con miembros) de Tamix, tal como lo ve quien pregunta.
+ *
+ * No tiene nada que ver con `Gestion`/`RolDeEquipo`: un canal no cuelga de
+ * una publicación con equipo, cuelga de quien lo fundó y de quien está
+ * dentro. `soyAdmin` es la autoridad de rol aquí, resuelta por Tamix — igual
+ * que `tuRol` lo es para una cuenta.
+ */
+export type Canal = Record<string, unknown> & {
+  id: string;
+  handle: string;
+  name: string;
+  descripcion?: string | null;
+  avatarUrl?: string | null;
+  coverUrl?: string | null;
+  acceso: 'abierto' | 'aprobacion';
+  quienPublica?: 'todos' | 'admins';
+  respuestas?: 'publicas' | 'privadas';
+  miembros: number;
+  piezas: number;
+  papel: 'fuera' | 'pendiente' | 'miembro' | 'admin';
+  soyMiembro: boolean;
+  soyAdmin: boolean;
+  silenciado: boolean;
+  createdAt: string;
+};
+
+/** Una fila de `GET /canales/:handle/miembros`. */
+export type MiembroDeCanal = {
+  userId: string;
+  handle: string;
+  name: string;
+  avatarUrl: string | null;
+  rol: 'miembro' | 'admin' | 'pendiente';
+  silenciado: boolean;
+  esFundador: boolean;
+  desde: string;
+};
+
+/** Una pieza publicada en un canal, tal como la devuelve `GET /canales/:handle/feed`. */
+export type PiezaDeCanal = Pieza & {
+  author?: { handle?: string; name?: string; avatarUrl?: string | null };
+};

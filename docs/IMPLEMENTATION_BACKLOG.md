@@ -76,6 +76,24 @@ de la app. Antes de construir la bandeja del Studio hace falta ese endpoint
 en `services/social-api`, que es trabajo del otro repositorio. La pantalla
 del Studio existe como fachada honesta, sin datos simulados.
 
+## P1 — Canal — construido lo esencial
+
+Los canales de Tamix (comunidades con miembros, distintas de una cuenta con
+equipo — no confundir con la «Comunidad» de arriba, que es otra cosa) ya se
+pueden administrar desde `/canal`: ver los canales propios que se
+administran (`GET /canales/mios`, filtrado por `soyAdmin`), el listado
+completo de quién está dentro (`GET /canales/:handle/miembros`), aprobar y
+sacar gente, silenciarla y devolverle la voz, y ver lo publicado
+(`GET /canales/:handle/feed`) — todo contra endpoints que ya existían en
+Tamix, sin ninguno nuevo.
+
+No hay `Gestion` ni `RolDeEquipo` de por medio: la autoridad de rol es
+`soyAdmin`, que resuelve Tamix por membresía y no por equipo de cuenta.
+
+Backlog: publicar o programar una pieza de canal desde el Studio (hoy sólo
+se lee y se modera); cambiar los ajustes del canal (`PATCH /canales/:handle`
+ya existe en Tamix pero no está cableado aquí).
+
 ## P1 — Métricas — parcial
 
 Construido: desempeño por pieza (`GET /piezas/:tipo/:id/como-va`, ya

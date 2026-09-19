@@ -1,6 +1,7 @@
 import { createApiClient } from './httpClient';
 import type {
   Caja,
+  Canal,
   Cobros,
   CrearNotaEntrada,
   CrearPostEntrada,
@@ -10,8 +11,10 @@ import type {
   Equipo,
   ComoVa,
   Gestion,
+  MiembroDeCanal,
   PermisoDeSubida,
   Pieza,
+  PiezaDeCanal,
   PiezasPage,
   PublicationFull,
   QuienMira,
@@ -96,4 +99,28 @@ export const tamixApi = {
     api.patch<Equipo['equipo'][number]>(`/publicaciones/${encodeURIComponent(handle)}/equipo/${encodeURIComponent(userId)}`, { rol }),
   quitarDelEquipo: (handle: string, userId: string) =>
     api.delete<{ retirado: boolean } | null>(`/publicaciones/${encodeURIComponent(handle)}/equipo/${encodeURIComponent(userId)}`),
+
+  /**
+   * Los canales (comunidades con miembros), no las cuentas.
+   *
+   * Sin `Gestion` ni `RolDeEquipo` de por medio: un canal no cuelga de una
+   * publicación con equipo, cuelga de quien está dentro, y `soyAdmin` en cada
+   * fila es la autoridad de rol — la misma que decide `GET /canales/:handle`
+   * para el propio canal.
+   */
+  misCanales: () => api.get<{ grupos: Canal[] }>('/canales/mios'),
+  canal: (handle: string) => api.get<Canal>(`/canales/${encodeURIComponent(handle)}`),
+  miembrosDeCanal: (handle: string) =>
+    api.get<{ miembros: MiembroDeCanal[] }>(`/canales/${encodeURIComponent(handle)}/miembros`),
+  piezasDeCanal: (handle: string, orden: 'votos' | 'nuevo' = 'nuevo') =>
+    api.get<{ canal: Canal; items: PiezaDeCanal[] }>(`/canales/${encodeURIComponent(handle)}/feed`, { orden }),
+  aprobarEnCanal: (handle: string, userId: string) =>
+    api.post<{ rol: string }>(`/canales/${encodeURIComponent(handle)}/miembros/${encodeURIComponent(userId)}/aprobar`),
+  expulsarDeCanal: (handle: string, userId: string) =>
+    api.delete<{ fuera: boolean } | null>(`/canales/${encodeURIComponent(handle)}/miembros/${encodeURIComponent(userId)}`),
+  darVozEnCanal: (handle: string, userId: string, puedeHablar: boolean) =>
+    api.post<{ userId: string; silenciado: boolean }>(
+      `/canales/${encodeURIComponent(handle)}/miembros/${encodeURIComponent(userId)}/voz`,
+      { puedeHablar }
+    ),
 };
