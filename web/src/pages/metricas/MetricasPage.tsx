@@ -1,4 +1,4 @@
-import { BarChart3, Clock, ExternalLink, FileText, Globe, Smartphone, Video } from 'lucide-react';
+import { BarChart3, Clock, ExternalLink, FileText, Globe, MapPin, Smartphone, Video } from 'lucide-react';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -159,6 +159,12 @@ export function MetricasPage() {
                 desglose={quienMira.data.pais}
                 etiquetaDe={(c) => (c === 'ND' ? 'Sin dato' : c)}
                 icono={<Globe className="size-4" />}
+              />
+              <DesgloseCard
+                titulo="Ciudad"
+                desglose={quienMira.data.ciudad}
+                etiquetaDe={(c) => (c === 'sinDato' ? 'Sin dato' : c)}
+                icono={<MapPin className="size-4" />}
               />
               <DesgloseCard
                 titulo="Aparato"

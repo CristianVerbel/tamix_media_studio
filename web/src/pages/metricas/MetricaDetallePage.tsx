@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowLeft, Globe, Heart, MessageCircle, Repeat2, Reply, Smartphone } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Globe, Heart, MapPin, MessageCircle, Repeat2, Reply, Smartphone } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 
 import { PageHeader } from '@/components/PageHeader';
@@ -97,6 +97,7 @@ export function MetricaDetallePage() {
               <h2 className="mb-3 text-sm font-semibold text-muted-foreground">Desde dónde miró quien vio esto</h2>
               <div className="grid gap-4 sm:grid-cols-2">
                 <DesgloseCard titulo="País" desglose={quienMira.data.pais} etiquetaDe={(c) => (c === 'ND' ? 'Sin dato' : c)} icono={<Globe className="size-4" />} />
+                <DesgloseCard titulo="Ciudad" desglose={quienMira.data.ciudad} etiquetaDe={(c) => (c === 'sinDato' ? 'Sin dato' : c)} icono={<MapPin className="size-4" />} />
                 <DesgloseCard titulo="Aparato" desglose={quienMira.data.dispositivo} etiquetaDe={(c) => ETIQUETA_DISPOSITIVO[c] ?? c} icono={<Smartphone className="size-4" />} />
               </div>
             </div>

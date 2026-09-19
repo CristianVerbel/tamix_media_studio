@@ -98,6 +98,7 @@ export type QuienMira = {
   dias: number;
   muestraMinima: number;
   pais: Desglose;
+  ciudad: Desglose;
   dispositivo: Desglose;
   edad: Desglose;
   genero: Desglose;
