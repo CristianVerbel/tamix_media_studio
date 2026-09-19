@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { RequireAuth } from '@/components/RequireAuth';
 import { Shell } from '@/components/shell/Shell';
 import { AuditoriaPage } from '@/pages/auditoria/AuditoriaPage';
+import { CanalPage } from '@/pages/canal/CanalPage';
 import { ComunidadPage } from '@/pages/comunidad/ComunidadPage';
 import { ConfiguracionPage } from '@/pages/configuracion/ConfiguracionPage';
 import { ContenidoPage } from '@/pages/contenido/ContenidoPage';
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="contenido" element={<ContenidoPage />} />
         <Route path="planificador" element={<PlanificadorPage />} />
         <Route path="comunidad" element={<ComunidadPage />} />
+        <Route path="canal" element={<CanalPage />} />
         <Route path="metricas" element={<MetricasPage />} />
         <Route path="metricas/video/:id" element={<VideoDetallePage />} />
         <Route path="metricas/:tipo/:id" element={<MetricaDetallePage />} />

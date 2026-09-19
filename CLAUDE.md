@@ -70,7 +70,9 @@ El panel vive bajo su propio dominio (`studio.tamix.app`), no bajo
 README. Dentro del panel: `/entrar` (código al correo, contra la sesión de
 Tamix), `/resumen`, `/contenido`, `/planificador`, `/equipo`, `/ingresos`,
 `/integraciones`, `/auditoria`, `/metricas`, `/comunidad` (a la espera, ver
-backlog), `/configuracion`.
+backlog), `/canal` (los canales —comunidades con miembros— que administras;
+no confundir con `/comunidad`, que es la bandeja de comentarios/menciones de
+una cuenta), `/configuracion`.
 
 ## Reglas de ingeniería
 
