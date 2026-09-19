@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Archive, ArchiveRestore, BarChart3, FileText, Loader2, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
+import { Archive, ArchiveRestore, BarChart3, FileText, Loader2, MoreHorizontal, Pencil, Plus, Trash2, Upload } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -119,9 +119,16 @@ export function ContenidoPage() {
         description="Crea, edita, archiva y revisa el desempeño de cada pieza."
         actions={
           puedeCrear ? (
-            <Button onClick={() => setCrearAbierto(true)}>
-              <Plus /> Crear
-            </Button>
+            <>
+              <Button variant="outline" asChild>
+                <Link to="/panel/contenido/masiva">
+                  <Upload /> Subida masiva
+                </Link>
+              </Button>
+              <Button onClick={() => setCrearAbierto(true)}>
+                <Plus /> Crear
+              </Button>
+            </>
           ) : undefined
         }
       />
