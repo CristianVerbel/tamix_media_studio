@@ -13,6 +13,7 @@ import { IngresosPage } from '@/pages/ingresos/IngresosPage';
 import { IntegracionesPage } from '@/pages/integraciones/IntegracionesPage';
 import { LandingPage } from '@/pages/LandingPage';
 import { LoginPage } from '@/pages/LoginPage';
+import { TraeTuMedioPage } from '@/pages/TraeTuMedioPage';
 import { MetricaDetallePage } from '@/pages/metricas/MetricaDetallePage';
 import { MetricasPage } from '@/pages/metricas/MetricasPage';
 import { VideoDetallePage } from '@/pages/metricas/VideoDetallePage';
@@ -23,6 +24,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
+      <Route path="/trae-tu-medio" element={<TraeTuMedioPage />} />
       <Route path="/entrar" element={<LoginPage />} />
       <Route
         path="/panel"

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Loader2, Plug, Plus, Rss, Trash2, Webhook } from 'lucide-react';
 import { toast } from 'sonner';
+import { useSearchParams } from 'react-router-dom';
 
 import { PageHeader } from '@/components/PageHeader';
 import { CargandoBloque, ErrorBloque, VacioBloque } from '@/components/StateViews';
@@ -28,7 +29,24 @@ export function IntegracionesPage() {
     return studioApi.integraciones(handleActivo);
   }, [handleActivo]);
 
-  const [crearAbierto, setCrearAbierto] = React.useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  // Llega así desde /trae-tu-medio: abre el diálogo de «Conectar» de
+  // entrada, para no obligar a un segundo clic después de haber pulsado
+  // «Entrar y conectar mi contenido». Se limpia enseguida del historial —
+  // si no, un «atrás» hasta aquí lo reabriría solo.
+  const [crearAbierto, setCrearAbierto] = React.useState(() => searchParams.get('conectar') === '1');
+  React.useEffect(() => {
+    if (searchParams.get('conectar') === '1') {
+      setSearchParams((prev) => {
+        const siguiente = new URLSearchParams(prev);
+        siguiente.delete('conectar');
+        return siguiente;
+      }, { replace: true });
+    }
+    // Sólo al montar: es la señal de con qué se llegó a la pantalla, no algo
+    // que deba reabrirse si el resto de la URL cambia después.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [secretoAMostrar, setSecretoAMostrar] = React.useState<string | null>(null);
   const [ocupado, setOcupado] = React.useState<string | null>(null);
 
