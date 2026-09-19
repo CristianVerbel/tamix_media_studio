@@ -6,6 +6,7 @@ import { AuditoriaPage } from '@/pages/auditoria/AuditoriaPage';
 import { ComunidadPage } from '@/pages/comunidad/ComunidadPage';
 import { ConfiguracionPage } from '@/pages/configuracion/ConfiguracionPage';
 import { ContenidoPage } from '@/pages/contenido/ContenidoPage';
+import { SubidaMasivaPage } from '@/pages/contenido/SubidaMasivaPage';
 import { EquipoPage } from '@/pages/equipo/EquipoPage';
 import { IngresosPage } from '@/pages/ingresos/IngresosPage';
 import { IntegracionesPage } from '@/pages/integraciones/IntegracionesPage';
@@ -32,6 +33,7 @@ export default function App() {
       >
         <Route index element={<ResumenPage />} />
         <Route path="contenido" element={<ContenidoPage />} />
+        <Route path="contenido/masiva" element={<SubidaMasivaPage />} />
         <Route path="planificador" element={<PlanificadorPage />} />
         <Route path="comunidad" element={<ComunidadPage />} />
         <Route path="metricas" element={<MetricasPage />} />
