@@ -36,8 +36,16 @@ punto siguiente.
 
 ## 4. Planificador
 
-Lo único que Tamix no tenía: hoy publicar en Tamix es publicar ya. El
-planificador guarda el elemento en la tabla del Studio con su fecha, y un
+Una capacidad propia del Studio, no un espejo de algo que ya exista en la
+app. Tamix sí programa contenido —`POST /canales/:handle/programadas`—,
+pero sólo dentro de un canal, con topes propios (2 minutos a 1 año vista,
+50 piezas en cola) y lo que sale de esa cola siempre es una nota, nunca un
+artículo; el cliente oficial ni siquiera manda fotos ahí, aunque el
+servidor las acepte. No hay, en cambio, forma de programar un artículo o un
+apunte suelto fuera de un canal — y eso es justamente lo que resuelve el
+planificador del Studio.
+
+El planificador guarda el elemento en la tabla del Studio con su fecha, y un
 EventBridge Scheduler de un solo tiro lo dispara exactamente a esa hora
 llamando al webhook de publicación automática de la cuenta en Tamix — el
 mismo mecanismo que usaría el CMS de cualquier medio aliado. Reprogramar o

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { familiaDe, LIMITE, porQueNoSePuedeSubir } from './subirArchivo';
+import { familiaDe, LIMITE, porQueNoCabeEnElCarrusel, porQueNoCabeLaDuracion, porQueNoSePuedeSubir } from './subirArchivo';
 
 function archivo(type: string, size: number, name = 'archivo'): File {
   return new File([new Uint8Array(size)], name, { type });
@@ -39,5 +39,29 @@ describe('porQueNoSePuedeSubir', () => {
 
   it('un audio del mismo peso que una imagen de sobra no rebota, porque su tope es otro', () => {
     expect(porQueNoSePuedeSubir(archivo('audio/mpeg', LIMITE.imagen + 1))).toBeNull();
+  });
+});
+
+describe('porQueNoCabeLaDuracion', () => {
+  it('deja pasar una duración desconocida, igual que el servidor', () => {
+    expect(porQueNoCabeLaDuracion('video', null)).toBeNull();
+    expect(porQueNoCabeLaDuracion('video', undefined)).toBeNull();
+  });
+
+  it('un vídeo de 90 segundos exactos cabe; uno de 92 no', () => {
+    expect(porQueNoCabeLaDuracion('video', 90)).toBeNull();
+    expect(porQueNoCabeLaDuracion('video', 92)).toMatch(/90 segundos/);
+  });
+
+  it('un audio de 5 minutos exactos cabe; uno más largo no', () => {
+    expect(porQueNoCabeLaDuracion('audio', 300)).toBeNull();
+    expect(porQueNoCabeLaDuracion('audio', 302)).toMatch(/5 minutos/);
+  });
+});
+
+describe('porQueNoCabeEnElCarrusel', () => {
+  it('el tope del carrusel es más corto que el de un vídeo suelto', () => {
+    expect(porQueNoCabeEnElCarrusel(60)).toBeNull();
+    expect(porQueNoCabeEnElCarrusel(62)).toMatch(/60 segundos/);
   });
 });

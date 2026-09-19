@@ -1,3 +1,5 @@
+import { TOPE_AUDIO_SEGUNDOS, TOPE_DE_VIDEO_SEGUNDOS_CARRUSEL, TOPE_VIDEO_SEGUNDOS } from './composer';
+import { comprimirImagen } from './imagenEdicion';
 import { tamixApi } from './tamixApi';
 
 /**
@@ -48,6 +50,44 @@ function formatoMB(bytes: number): string {
   return `${(bytes / 1_000_000).toFixed(1)} MB`;
 }
 
+function formatoReloj(segundos: number): string {
+  const m = Math.floor(segundos / 60);
+  const s = Math.floor(segundos % 60);
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+/**
+ * Por qué esta duración no cabe para un audio o vídeo sueltos (no el
+ * carrusel), o `null` si cabe. Un segundo de margen por redondeo, igual que
+ * `motivoDeRechazo` en `domain/duracion.ts` del servidor — los mismos topes:
+ * 90 segundos de vídeo, 5 minutos de audio.
+ */
+export function porQueNoCabeLaDuracion(familia: 'audio' | 'video', segundos: number | null | undefined): string | null {
+  if (segundos == null || !Number.isFinite(segundos)) return null;
+  if (familia === 'video') {
+    if (segundos > TOPE_VIDEO_SEGUNDOS + 1) {
+      return `Ese video dura ${formatoReloj(segundos)} y aquí caben ${TOPE_VIDEO_SEGUNDOS} segundos. Recórtalo y vuelve a intentarlo.`;
+    }
+    return null;
+  }
+  if (segundos > TOPE_AUDIO_SEGUNDOS + 1) {
+    return `Ese audio dura ${formatoReloj(segundos)} y aquí caben ${Math.round(TOPE_AUDIO_SEGUNDOS / 60)} minutos. Si es un episodio, súbelo a tu podcast desde el estudio.`;
+  }
+  return null;
+}
+
+/**
+ * Por qué este vídeo no cabe dentro de un carrusel (tope propio, más corto
+ * que el de un vídeo suelto: 60 segundos), o `null` si cabe.
+ */
+export function porQueNoCabeEnElCarrusel(segundos: number | null | undefined): string | null {
+  if (segundos == null || !Number.isFinite(segundos)) return null;
+  if (segundos > TOPE_DE_VIDEO_SEGUNDOS_CARRUSEL + 1) {
+    return `Dentro de un carrusel, un vídeo puede durar hasta ${TOPE_DE_VIDEO_SEGUNDOS_CARRUSEL} segundos. Para algo más largo, publícalo como vídeo.`;
+  }
+  return null;
+}
+
 /**
  * Sube un archivo directo al bucket y devuelve su dirección pública.
  *
@@ -64,8 +104,13 @@ export async function subirArchivo(
   const problema = porQueNoSePuedeSubir(archivo);
   if (problema) throw new Error(problema);
 
-  const permiso = await tamixApi.permisoDeSubida(archivo.type, archivo.size);
-  await subirConProgreso(permiso.uploadUrl, archivo, permiso.headers, alAvanzar);
+  // Toda imagen se comprime antes de subir —lado largo a 2048px, calidad
+  // 0.82— igual que hace la app en `api.uploadImage`: si no, el Studio
+  // subiría fotos más pesadas de lo que sube la app para el mismo archivo.
+  const archivoASubir = archivo.type.startsWith('image/') ? await comprimirImagen(archivo) : archivo;
+
+  const permiso = await tamixApi.permisoDeSubida(archivoASubir.type, archivoASubir.size);
+  await subirConProgreso(permiso.uploadUrl, archivoASubir, permiso.headers, alAvanzar);
 
   if (!permiso.publicUrl) {
     throw new Error('El archivo se subió, pero el servidor no dejó una dirección pública.');
@@ -141,5 +186,24 @@ export function medirArchivo(archivo: File): Promise<{ ancho: number; alto: numb
 
     limpiar();
     reject(new Error('Este archivo no tiene ancho ni alto que medir.'));
+  });
+}
+
+/** Cuánto dura un archivo de audio, leído del propio archivo. */
+export function medirDuracionDeAudio(archivo: File): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(archivo);
+    const limpiar = () => URL.revokeObjectURL(url);
+    const audio = new Audio();
+    audio.preload = 'metadata';
+    audio.onloadedmetadata = () => {
+      resolve(audio.duration);
+      limpiar();
+    };
+    audio.onerror = () => {
+      limpiar();
+      reject(new Error('No se pudo leer el audio.'));
+    };
+    audio.src = url;
   });
 }

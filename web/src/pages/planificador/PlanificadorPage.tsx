@@ -68,7 +68,7 @@ export function PlanificadorPage() {
       <PageHeader
         eyebrow="Calendario editorial"
         title="Planificador"
-        description="Programa contenido y sigue su estado hasta que se publica solo."
+        description="Programa contenido y sigue su estado hasta que se publica solo. Es una función propia del Studio: en la app, programar sólo existe dentro de un canal, no para piezas sueltas — aquí se puede programar cualquier artículo, con su misma automatización."
         actions={
           puedeProgramar && (
             <Button

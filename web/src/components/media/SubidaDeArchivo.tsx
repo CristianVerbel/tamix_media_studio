@@ -4,7 +4,7 @@ import { ImageUp, Loader2, Music, Video, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import { medirArchivo, porQueNoSePuedeSubir, subirArchivo } from '@/lib/subirArchivo';
+import { medirArchivo, medirDuracionDeAudio, porQueNoCabeLaDuracion, porQueNoSePuedeSubir, subirArchivo } from '@/lib/subirArchivo';
 
 type Familia = 'imagen' | 'audio' | 'video';
 
@@ -63,6 +63,35 @@ export function SubidaDeArchivo({
       return;
     }
 
+    // La duración se revisa antes de subir, no después: gastar la subida
+    // entera de un vídeo de cinco minutos para enterarse al final de que no
+    // cabe es peor que decirlo de una vez, igual que hace la app.
+    let medidaVideo: { ancho: number; alto: number; duracionSegundos?: number } | null = null;
+    if (familia === 'video') {
+      try {
+        medidaVideo = await medirArchivo(archivo);
+        const motivo = porQueNoCabeLaDuracion('video', medidaVideo.duracionSegundos);
+        if (motivo) {
+          setError(motivo);
+          return;
+        }
+      } catch {
+        // Si no se pudo medir, se deja pasar: el servidor es la autoridad final.
+      }
+    }
+    if (familia === 'audio') {
+      try {
+        const duracion = await medirDuracionDeAudio(archivo);
+        const motivo = porQueNoCabeLaDuracion('audio', duracion);
+        if (motivo) {
+          setError(motivo);
+          return;
+        }
+      } catch {
+        // Igual: sin medida, se deja pasar.
+      }
+    }
+
     setError(null);
     setNombreLocal(archivo.name);
     setSubiendo(true);
@@ -72,6 +101,10 @@ export function SubidaDeArchivo({
         subirArchivo(archivo, setAvance),
         (async () => {
           if (!onMedido || familia === 'audio') return;
+          if (medidaVideo) {
+            onMedido(medidaVideo);
+            return;
+          }
           try {
             onMedido(await medirArchivo(archivo));
           } catch {

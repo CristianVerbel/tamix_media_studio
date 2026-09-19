@@ -38,7 +38,10 @@ export type Gestion = {
 };
 
 export type Access = 'publico' | 'suscriptores' | 'pago';
-export type PostKind = 'articulo' | 'audio' | 'video' | 'envivo' | string;
+export type PostKind = 'articulo' | 'audio' | 'video' | 'envivo' | 'encuesta' | 'pregunta' | string;
+
+/** Quién puede responder a un apunte u hilo — distinto de `Access`, que decide quién puede verlo. */
+export type Circulo = 'todos' | 'seguidores' | 'suscriptores' | 'mencionados' | 'nadie';
 
 /** Una pieza (post o nota/apunte), tratada con campos sueltos según venga. */
 export type Pieza = Record<string, unknown> & {
@@ -188,7 +191,13 @@ export type CrearPostEntrada = {
   coverUrl?: string;
   topics?: string[];
   priceCop?: number;
-  comoPublicacion?: boolean;
+  /**
+   * Publicar en nombre de una cuenta que se gestiona, en vez de la propia.
+   * El handle de esa cuenta, no un interruptor: así lo espera Tamix
+   * (`POST /posts`, `services/social-api`) — mandarle `true`/`false` aquí
+   * llegaría como si fuera un handle y fallaría al resolver el permiso.
+   */
+  comoPublicacion?: string;
   /** Sólo con `kind: 'audio'`. Un audio sin portada no se deja publicar. */
   audioUrl?: string;
   /** Sólo con `kind: 'video'`. */
@@ -198,6 +207,8 @@ export type CrearPostEntrada = {
   durationSeconds?: number;
   /** Sólo con `kind: 'envivo'`: el enlace de la transmisión de YouTube. */
   youtubeUrl?: string;
+  /** Sólo con `kind: 'encuesta'`: hasta cinco opciones, el titular es la pregunta. */
+  pollOptions?: string[];
 };
 
 /** La respuesta de `POST /media/upload-url`: a dónde subir, y a qué URL queda el archivo. */
@@ -220,8 +231,11 @@ export type MedioDelCarrusel = {
 
 export type CrearNotaEntrada = {
   body: string;
-  circulo?: string;
+  /** Quién puede responder. Ausente = cualquiera, igual que no mandar nada. */
+  circulo?: Circulo;
   medios?: MedioDelCarrusel[];
+  /** Si esto es una parte de un hilo, el `id` de la nota anterior de la cadena. */
+  parentId?: string;
 };
 
 export type EditarPostEntrada = Partial<

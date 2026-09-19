@@ -24,8 +24,7 @@ import { alcanza } from '@/lib/roles';
 import { tamixApi } from '@/lib/tamixApi';
 import type { Pieza } from '@/types/tamix';
 
-import { CrearPiezaDialog } from './CrearPiezaDialog';
-import { EditarPiezaDialog } from './EditarPiezaDialog';
+import { ComposerDialog } from './ComposerDialog';
 
 type Tipo = 'posts' | 'apuntes';
 
@@ -227,22 +226,22 @@ export function ContenidoPage() {
         </div>
       )}
 
-      <CrearPiezaDialog
-        open={crearAbierto}
+      <ComposerDialog
+        open={crearAbierto || editando !== null}
         onOpenChange={(v) => {
-          setCrearAbierto(v);
-          if (!v) {
-            setParams((p) => {
-              const next = new URLSearchParams(p);
-              next.delete('crear');
-              return next;
-            });
-          }
+          if (v) return;
+          setCrearAbierto(false);
+          setEditando(null);
+          setParams((p) => {
+            const next = new URLSearchParams(p);
+            next.delete('crear');
+            return next;
+          });
         }}
-        tipoInicial={tipo}
-        onCreated={pagina.reload}
+        pieza={editando}
+        tipo={tipo}
+        onSaved={pagina.reload}
       />
-      <EditarPiezaDialog pieza={editando} tipo={tipo} onOpenChange={(v) => !v && setEditando(null)} onSaved={pagina.reload} />
     </div>
   );
 }

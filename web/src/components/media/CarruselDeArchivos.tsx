@@ -1,14 +1,13 @@
 import * as React from 'react';
-import { GripVertical, ImagePlus, Loader2, Trash2 } from 'lucide-react';
+import { GripVertical, ImagePlus, Loader2, Pencil, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { TOPE_DE_PIEZAS, TOPE_DE_VIDEO_SEGUNDOS_CARRUSEL } from '@/lib/composer';
 import { cn } from '@/lib/utils';
-import { medirArchivo, porQueNoSePuedeSubir, subirArchivo } from '@/lib/subirArchivo';
+import { medirArchivo, porQueNoCabeEnElCarrusel, porQueNoSePuedeSubir, subirArchivo } from '@/lib/subirArchivo';
 import type { MedioDelCarrusel } from '@/types/tamix';
-
-/** Hasta diez piezas por apunte — igual que en la app, ver `TOPE_DE_PIEZAS`. */
-const TOPE_DE_PIEZAS = 10;
+import { EditorDeImagen } from './EditorDeImagen';
 
 const ACEPTA = 'image/jpeg,image/png,image/webp,video/mp4,video/webm';
 
@@ -40,14 +39,27 @@ export function CarruselDeArchivos({
         setEnCurso((prev) => [...prev, { id, nombre: archivo.name, avance: 0, error: problema }]);
         continue;
       }
-      setEnCurso((prev) => [...prev, { id, nombre: archivo.name, avance: 0, error: null }]);
       const tipo = archivo.type.startsWith('video/') ? 'video' : 'imagen';
+
+      // La duración de un vídeo se revisa antes de subir: el tope del
+      // carrusel (60s) es más corto que el de un vídeo suelto (90s).
+      let medidaPrevia: { ancho: number; alto: number; duracionSegundos?: number } | null = null;
+      if (tipo === 'video') {
+        medidaPrevia = await medirArchivo(archivo).catch(() => null);
+        const motivo = porQueNoCabeEnElCarrusel(medidaPrevia?.duracionSegundos);
+        if (motivo) {
+          setEnCurso((prev) => [...prev, { id, nombre: archivo.name, avance: 0, error: motivo }]);
+          continue;
+        }
+      }
+
+      setEnCurso((prev) => [...prev, { id, nombre: archivo.name, avance: 0, error: null }]);
       try {
         const [url, medida] = await Promise.all([
           subirArchivo(archivo, (fraccion) =>
             setEnCurso((prev) => prev.map((f) => (f.id === id ? { ...f, avance: fraccion } : f)))
           ),
-          medirArchivo(archivo).catch(() => null),
+          medidaPrevia ? Promise.resolve(medidaPrevia) : medirArchivo(archivo).catch(() => null),
         ]);
         onChange([
           ...medios,
@@ -81,6 +93,48 @@ export function CarruselDeArchivos({
     onChange(copia);
   }
 
+  const [editando, setEditando] = React.useState<{ indice: number; archivo: File } | null>(null);
+  const [cargandoParaEditar, setCargandoParaEditar] = React.useState<number | null>(null);
+
+  async function abrirEditor(i: number) {
+    const medio = medios[i];
+    if (!medio || medio.tipo !== 'imagen') return;
+    setCargandoParaEditar(i);
+    try {
+      const respuesta = await fetch(medio.url);
+      const blob = await respuesta.blob();
+      const archivo = new File([blob], `foto-${i + 1}.jpg`, { type: blob.type || 'image/jpeg' });
+      setEditando({ indice: i, archivo });
+    } catch {
+      setEnCurso((prev) => [
+        ...prev,
+        { id: `editar-${i}-${Date.now()}`, nombre: 'Editar foto', avance: 0, error: 'No pudimos abrir esta imagen para editarla.' },
+      ]);
+    } finally {
+      setCargandoParaEditar(null);
+    }
+  }
+
+  async function alTerminarEdicion(archivoEditado: File) {
+    if (!editando) return;
+    const { indice } = editando;
+    const id = `editar-${indice}-${Date.now()}`;
+    setEditando(null);
+    setEnCurso((prev) => [...prev, { id, nombre: 'Guardando la edición…', avance: 0, error: null }]);
+    try {
+      const url = await subirArchivo(archivoEditado, (fraccion) =>
+        setEnCurso((prev) => prev.map((f) => (f.id === id ? { ...f, avance: fraccion } : f)))
+      );
+      onChange(medios.map((m, i) => (i === indice ? { ...m, url } : m)));
+    } catch (err) {
+      setEnCurso((prev) =>
+        prev.map((f) => (f.id === id ? { ...f, error: err instanceof Error ? err.message : 'No se pudo guardar la edición.' } : f))
+      );
+      return;
+    }
+    setEnCurso((prev) => prev.filter((f) => f.id !== id));
+  }
+
   return (
     <div className="space-y-2">
       {medios.length > 0 && (
@@ -106,6 +160,19 @@ export function CarruselDeArchivos({
                 </Button>
               </div>
               <div className="absolute inset-x-0 bottom-0 flex justify-center gap-1 bg-gradient-to-t from-black/60 to-transparent p-1 opacity-0 transition-opacity group-hover:opacity-100">
+                {medio.tipo === 'imagen' && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    disabled={cargandoParaEditar === i}
+                    className="text-white hover:bg-white/20 hover:text-white"
+                    onClick={() => abrirEditor(i)}
+                    aria-label={`Editar pieza ${i + 1}`}
+                  >
+                    {cargandoParaEditar === i ? <Loader2 className="size-3.5 animate-spin" /> : <Pencil className="size-3.5" />}
+                  </Button>
+                )}
                 <Button
                   type="button"
                   variant="ghost"
@@ -178,10 +245,13 @@ export function CarruselDeArchivos({
           )}
         >
           <ImagePlus className="size-5" />
-          <span>
-            Arrastra fotos o vídeos, o haz clic — caben {sitio} más de {TOPE_DE_PIEZAS}
-          </span>
+          <span>Arrastra fotos o vídeos, o haz clic</span>
         </div>
+      )}
+      {medios.length > 0 && (
+        <p className="text-xs text-muted-foreground">
+          {medios.length} de {TOPE_DE_PIEZAS} · los vídeos, hasta {TOPE_DE_VIDEO_SEGUNDOS_CARRUSEL} segundos
+        </p>
       )}
       <input
         ref={inputRef}
@@ -194,6 +264,12 @@ export function CarruselDeArchivos({
           e.target.value = '';
           if (archivos?.length) void agregar(archivos);
         }}
+      />
+      <EditorDeImagen
+        archivo={editando?.archivo ?? null}
+        open={editando !== null}
+        onOpenChange={(v) => !v && setEditando(null)}
+        onListo={alTerminarEdicion}
       />
     </div>
   );
