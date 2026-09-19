@@ -96,6 +96,9 @@ export function LandingPage() {
           <a href="#como-funciona" className="hover:text-foreground">
             Cómo entra tu medio
           </a>
+          <Link to="/trae-tu-medio" className="hover:text-foreground">
+            Trae tu medio
+          </Link>
         </nav>
         <Button asChild variant="ghost" size="sm" className="shrink-0">
           <Link to={ctaHref}>{autenticado ? 'Tu panel' : 'Entrar'}</Link>
@@ -255,6 +258,9 @@ export function LandingPage() {
             <a href="#como-funciona" className="text-muted-foreground hover:text-foreground">
               Cómo entra tu medio
             </a>
+            <Link to="/trae-tu-medio" className="text-muted-foreground hover:text-foreground">
+              Trae tu medio
+            </Link>
           </div>
           <div className="flex flex-col gap-2 text-sm">
             <span className="font-semibold text-foreground">Cuenta</span>
