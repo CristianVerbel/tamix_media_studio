@@ -81,6 +81,61 @@ export type PiezasPage = {
   nextCursor: string | null;
 };
 
+/** Un cubo de un desglose de audiencia, con su porcentaje ya calculado. */
+export type ValorDeDesglose = { clave: string; cantidad: number; porcentaje: number };
+
+/**
+ * Un desglose —país, aparato, edad, género, hora de actividad.
+ *
+ * `suficiente` en `false` no es «sin datos»: es «con pocos». La pantalla lo
+ * dice con palabras en vez de enseñar un porcentaje que no significa nada,
+ * el mismo criterio que ya usa `tasaDeLectura` en `ComoVa`.
+ */
+export type Desglose = { total: number; suficiente: boolean; valores: ValorDeDesglose[] };
+
+/** Quién mira una cuenta, o una pieza suya: país, aparato, edad, género. */
+export type QuienMira = {
+  dias: number;
+  muestraMinima: number;
+  pais: Desglose;
+  dispositivo: Desglose;
+  edad: Desglose;
+  genero: Desglose;
+  /** Sólo en la de la cuenta entera: por pieza no hace falta. */
+  horasDeActividad?: Desglose;
+};
+
+/** Un vídeo de la cuenta, con su resumen, para la lista de vídeos. */
+export type VideoDeLaCuenta = {
+  id: string;
+  titulo: string | null;
+  portadaUrl: string | null;
+  publicadaEn: string;
+  reproducciones: number;
+  tasaDeFinalizacion: number | null;
+  tiempoPromedio: number | null;
+};
+
+export type EtapaDelFunnel = { etapa: 'inicio' | 'q25' | 'q50' | 'q75' | 'completo'; valor: number };
+
+/** Cómo le fue a un vídeo: reproducciones, tiempo visto, y dónde se cae la gente. */
+export type VideoStats = {
+  pieza: { id: string; titulo: string; portadaUrl: string | null };
+  dias: number;
+  resumen: {
+    inicio: number;
+    q25: number;
+    q50: number;
+    q75: number;
+    completo: number;
+    segundos: number;
+  };
+  tasaDeFinalizacion: number | null;
+  tiempoPromedio: number | null;
+  funnel: EtapaDelFunnel[];
+  trend: { date: string; inicio: number; completo: number }[];
+};
+
 export type ComoVa = {
   pieza: Pieza;
   dias: number;

@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowLeft, Heart, MessageCircle, Repeat2, Reply } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Globe, Heart, MessageCircle, Repeat2, Reply, Smartphone } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 
 import { PageHeader } from '@/components/PageHeader';
@@ -9,11 +9,20 @@ import { useApiResource } from '@/hooks/useApiResource';
 import { formatNumero } from '@/lib/format';
 import { tamixApi } from '@/lib/tamixApi';
 
+import { DesgloseCard } from './DesgloseCard';
+
+const ETIQUETA_DISPOSITIVO: Record<string, string> = { IOS: 'iOS', Android: 'Android', Web: 'Web', Otro: 'Otro' };
+
 export function MetricaDetallePage() {
   const { tipo, id } = useParams<{ tipo: 'post' | 'nota'; id: string }>();
   const comoVa = useApiResource(() => {
     if (!tipo || !id) return Promise.reject(new Error('Falta identificar la pieza'));
     return tamixApi.comoVa(tipo, id, 30);
+  }, [tipo, id]);
+
+  const quienMira = useApiResource(() => {
+    if (!tipo || !id) return Promise.reject(new Error('Falta identificar la pieza'));
+    return tamixApi.piezaQuienMira(tipo, id, 30);
   }, [tipo, id]);
 
   return (
@@ -81,6 +90,16 @@ export function MetricaDetallePage() {
               </CardHeader>
               <CardContent className="text-2xl font-bold">{(comoVa.data.tasaDeLectura * 100).toFixed(1)}%</CardContent>
             </Card>
+          )}
+
+          {quienMira.data && (
+            <div>
+              <h2 className="mb-3 text-sm font-semibold text-muted-foreground">Desde dónde miró quien vio esto</h2>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <DesgloseCard titulo="País" desglose={quienMira.data.pais} etiquetaDe={(c) => (c === 'ND' ? 'Sin dato' : c)} icono={<Globe className="size-4" />} />
+                <DesgloseCard titulo="Aparato" desglose={quienMira.data.dispositivo} etiquetaDe={(c) => ETIQUETA_DISPOSITIVO[c] ?? c} icono={<Smartphone className="size-4" />} />
+              </div>
+            </div>
           )}
         </div>
       ) : null}

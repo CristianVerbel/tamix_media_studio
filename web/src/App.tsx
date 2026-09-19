@@ -13,6 +13,7 @@ import { LandingPage } from '@/pages/LandingPage';
 import { LoginPage } from '@/pages/LoginPage';
 import { MetricaDetallePage } from '@/pages/metricas/MetricaDetallePage';
 import { MetricasPage } from '@/pages/metricas/MetricasPage';
+import { VideoDetallePage } from '@/pages/metricas/VideoDetallePage';
 import { PlanificadorPage } from '@/pages/planificador/PlanificadorPage';
 import { ResumenPage } from '@/pages/ResumenPage';
 
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="planificador" element={<PlanificadorPage />} />
         <Route path="comunidad" element={<ComunidadPage />} />
         <Route path="metricas" element={<MetricasPage />} />
+        <Route path="metricas/video/:id" element={<VideoDetallePage />} />
         <Route path="metricas/:tipo/:id" element={<MetricaDetallePage />} />
         <Route path="ingresos" element={<IngresosPage />} />
         <Route path="integraciones" element={<IntegracionesPage />} />
