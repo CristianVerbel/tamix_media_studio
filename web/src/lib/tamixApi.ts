@@ -14,6 +14,9 @@ import type {
   Pieza,
   PiezasPage,
   PublicationFull,
+  QuienMira,
+  VideoDeLaCuenta,
+  VideoStats,
   Viewer,
 } from '@/types/tamix';
 import type { Rol } from './roles';
@@ -42,6 +45,25 @@ export const tamixApi = {
 
   comoVa: (tipo: 'post' | 'nota', id: string, dias = 30) =>
     api.get<ComoVa>(`/piezas/${tipo}/${encodeURIComponent(id)}/como-va`, { dias }),
+
+  /**
+   * Quién mira una cuenta: país, aparato, edad, género, horas de actividad.
+   *
+   * `GET /publicaciones/:handle/quien-mira` en Tamix, con permiso de equipo
+   * —no `/me/quien-mira`, que resolvería contra la sesión de quien lleva el
+   * Studio y no contra la cuenta que está gestionando—.
+   */
+  quienMira: (handle: string, dias = 30) =>
+    api.get<QuienMira>(`/publicaciones/${encodeURIComponent(handle)}/quien-mira`, { dias }),
+
+  piezaQuienMira: (tipo: 'post' | 'nota', id: string, dias = 30) =>
+    api.get<QuienMira>(`/piezas/${tipo}/${encodeURIComponent(id)}/quien-mira`, { dias }),
+
+  videos: (handle: string, dias = 30) =>
+    api.get<VideoDeLaCuenta[]>(`/publicaciones/${encodeURIComponent(handle)}/videos`, { dias }),
+
+  videoStats: (postId: string, dias = 30) =>
+    api.get<VideoStats>(`/piezas/post/${encodeURIComponent(postId)}/video`, { dias }),
 
   /**
    * Pide dónde subir un archivo. Devuelve una URL firmada del bucket, no un
